@@ -13,6 +13,7 @@ namespace ExcelSuradniceScript
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             var core = new EssCore();
+            core.Start();
 
             Console.ReadKey();
         }

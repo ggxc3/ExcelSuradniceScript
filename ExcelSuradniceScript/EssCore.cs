@@ -55,6 +55,7 @@ namespace ExcelSuradniceScript
 
         public void Start()
         {
+            _excelPackage.SaveAs(new FileInfo(@"C:\Users\jakub\Desktop\new.xlsx"));
         }
     }
 }
