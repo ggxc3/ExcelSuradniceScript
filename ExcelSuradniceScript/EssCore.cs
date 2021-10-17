@@ -96,6 +96,19 @@ namespace ExcelSuradniceScript
             return number;
         }
 
+        private void SaveAs()
+        {
+            String pathToFile = EssFileManager.SaveFile();
+            if (pathToFile == null)
+            {
+                Console.WriteLine("Chyba pri ulkadaní súboru.");
+                return;
+            }
+
+            var file = new FileInfo(pathToFile);
+            _excelPackage.SaveAs(file);
+        }
+
         public void Start()
         {
             var cols = SelectCols();
@@ -106,7 +119,7 @@ namespace ExcelSuradniceScript
             fm.FormatColumns(cols);
 
             Console.WriteLine("Ukladám súbor.");
-            _excelPackage.SaveAs(new FileInfo(@"C:\Users\jakub\Desktop\new.xlsx"));
+            SaveAs();
         }
     }
 }

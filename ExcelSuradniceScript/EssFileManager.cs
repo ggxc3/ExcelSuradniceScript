@@ -24,5 +24,23 @@ namespace ExcelSuradniceScript
 
             return null;
         }
+
+        public static string SaveFile()
+        {
+            var dialog = new SaveFileDialog
+            {
+                Title = "Uložiť ako",
+                DefaultExt = "xlsx",
+                Filter = "Excel Files|*.xls;*.xlsx;*.xlsm",
+                RestoreDirectory = true
+            };
+            
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                return dialog.FileName;
+            }
+
+            return null;
+        }
     }
 }
