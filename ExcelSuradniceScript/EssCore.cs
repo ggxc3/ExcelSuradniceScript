@@ -20,7 +20,11 @@ namespace ExcelSuradniceScript
 
             var file = new FileInfo(pathToFile);
 
+            
+            Console.WriteLine("Načítavám súbor.");
             _excelPackage = new ExcelPackage(file);
+            Console.WriteLine("Súbor úspešne načítaný.");
+            Console.WriteLine("Počkaj na ďalší pokyn.");
             _mainSheet = _excelPackage.Workbook.Worksheets[SelectSheet() - 1];
         }
 
@@ -53,10 +57,55 @@ namespace ExcelSuradniceScript
             return selected;
         }
 
+        private string[] SelectCols()
+        {
+            string stringCols;
+            do
+            {
+                Console.WriteLine("Zadaj stlpce na fomatovanie (oddelene ciarkou): ");
+                stringCols = Console.ReadLine(); 
+            } while (stringCols == null);
+            stringCols = stringCols.Replace(" ", "").ToUpper();
+            
+            return stringCols.Split(",");
+        }
+
+        private int SelectStartNumber()
+        {
+            int number;
+            string input;
+            do
+            {
+                Console.WriteLine("Zadaj startovacie cislo riadka: ");
+                input = Console.ReadLine();
+            } while (!int.TryParse(input, out number));
+            
+            return number;
+        }
+        
+        private int SelectEndNumber()
+        {
+            int number;
+            string input;
+            do
+            {
+                Console.WriteLine("Zadaj konciace cislo riadka: ");
+                input = Console.ReadLine();
+            } while (!int.TryParse(input, out number));
+            
+            return number;
+        }
+
         public void Start()
         {
-            var fm = new EssFormatManager(_mainSheet, 3, 24963);
-            fm.FormatColumns(new []{"AU"});
+            var cols = SelectCols();
+            var start = SelectStartNumber();
+            var end = SelectEndNumber();
+            
+            var fm = new EssFormatManager(_mainSheet, start, end);
+            fm.FormatColumns(cols);
+
+            Console.WriteLine("Ukladám súbor.");
             _excelPackage.SaveAs(new FileInfo(@"C:\Users\jakub\Desktop\new.xlsx"));
         }
     }

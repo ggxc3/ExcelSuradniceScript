@@ -53,10 +53,13 @@ namespace ExcelSuradniceScript
                 }
             }
 
-            foreach (var arr in deleteRows)
+            var index = 1;
+            for (int i = deleteRows.Count - 1; i > -1; i--)
             {
-                _sheet.DeleteRow(arr[0], arr[1]);
-                _end = _end - arr[1];
+                Console.WriteLine($"Mažem nespravne riadky {index}/{deleteRows.Count}");
+                _sheet.DeleteRow(deleteRows[i][0], deleteRows[i][1]);
+                _end = _end - deleteRows[i][1];
+                index++;
             }
         }
 
@@ -75,27 +78,37 @@ namespace ExcelSuradniceScript
                 text = text.Substring(1);
             }
 
-            if (int.Parse(text[0].ToString() + text[1]) < 30)
+            int firstTwo;
+            if (int.TryParse(text[0].ToString() + text[1], out firstTwo))
             {
-                if (text.Contains("N"))
+                if (firstTwo < 30)
                 {
-                    text = text.Replace("N", "");
+                    if (text.Contains("N"))
+                    {
+                        text = text.Replace("N", "");
+                    }
+
+                    if (!text.Contains("E"))
+                    {
+                        text = text.Substring(0, 2) + "E" + text.Substring(2);
+                    }
                 }
-                if (!text.Contains("E"))
+                else
                 {
-                    text = text.Substring(0, 2) + "E" + text.Substring(2);
+                    if (text.Contains("E"))
+                    {
+                        text = text.Replace("E", "");
+                    }
+
+                    if (!text.Contains("N"))
+                    {
+                        text = text.Substring(0, 2) + "N" + text.Substring(2);
+                    }
                 }
             }
             else
             {
-                if (text.Contains("E"))
-                {
-                    text = text.Replace("E", "");
-                }
-                if (!text.Contains("N"))
-                {
-                    text = text.Substring(0, 2) + "N" + text.Substring(2);
-                }
+                return false;
             }
 
             c.Value = text;
