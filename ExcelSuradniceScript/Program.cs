@@ -13,8 +13,16 @@ namespace ExcelSuradniceScript
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             var core = new EssCore();
-            core.Start();
+            try
+            {
+                core.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
+            Console.WriteLine("Pre zatvorenie konzoly stlačte ľubovoľné tlačidlo.");
             Console.ReadKey();
         }
         

@@ -1,33 +1,71 @@
 ﻿using System;
+using System.Collections.Generic;
 using OfficeOpenXml;
 
 namespace ExcelSuradniceScript
 {
     class EssFormatManager
     {
-        public static void FormatColumns(ExcelWorksheet sheet, string[] columns, int start, int end)
+        private ExcelWorksheet _sheet;
+        private int _start;
+        private int _end;
+
+        public EssFormatManager(ExcelWorksheet sheet, int start, int end)
+        {
+            _sheet = sheet;
+            _start = start;
+            _end = end;
+        }
+
+        public void FormatColumns(string[] columns)
         {
             foreach (var col in columns)
             {
-                FormatColumn(sheet, col, start, end);
+                FormatColumn(col);
             }
         }
         
-        private static void FormatColumn(ExcelWorksheet sheet, string column, int start, int end)
+        private void FormatColumn(string column)
         {
-            for (int i = start; i <= end; i++)
+            var deleteRows = new List<int[]>();
+            bool falsing = false;
+            for (int i = _start; i <= _end; i++)
             {
-                FormatCell(sheet, column, i);
+                Console.WriteLine($"Riadok: {i}");
+                if (!FormatCell(column, i))
+                {
+                    if (!falsing)
+                    {
+                        deleteRows.Add(new []{i, 1});
+                        falsing = true;
+                    }
+                    else
+                    {
+                        deleteRows[deleteRows.Count - 1][1]++;
+                    }
+                }
+                else
+                {
+                    if (falsing)
+                    {
+                        falsing = false;
+                    }
+                }
+            }
+
+            foreach (var arr in deleteRows)
+            {
+                _sheet.DeleteRow(arr[0], arr[1]);
+                _end = _end - arr[1];
             }
         }
 
-        private static void FormatCell(ExcelWorksheet sheet, string col, int row)
+        private bool FormatCell(string col, int row)
         {
-            var c = sheet.Cells[col + row];
+            var c = _sheet.Cells[col + row];
             if (c == null || c.Value == null || c.Value.ToString() == "" || c.Text.Length < 5 || c.Text[1] == '.' || c.Text[1] == ',')
             {
-                sheet.DeleteRow(row);
-                return;
+                return false;
             }
 
             var text = c.Text.Replace(" ", "");
@@ -61,6 +99,7 @@ namespace ExcelSuradniceScript
             }
 
             c.Value = text;
+            return true;
         }
     }
 }

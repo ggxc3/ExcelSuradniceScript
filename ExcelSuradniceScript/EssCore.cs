@@ -55,6 +55,8 @@ namespace ExcelSuradniceScript
 
         public void Start()
         {
+            var fm = new EssFormatManager(_mainSheet, 3, 24963);
+            fm.FormatColumns(new []{"AU"});
             _excelPackage.SaveAs(new FileInfo(@"C:\Users\jakub\Desktop\new.xlsx"));
         }
     }
