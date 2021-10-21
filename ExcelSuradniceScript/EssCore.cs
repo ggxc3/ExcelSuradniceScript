@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using OfficeOpenXml;
 
 namespace ExcelSuradniceScript
@@ -57,17 +58,28 @@ namespace ExcelSuradniceScript
             return selected;
         }
 
-        private string[] SelectCols()
+        private string[][] SelectCols()
         {
             string stringCols;
             do
             {
                 Console.WriteLine("Zadaj stlpce na fomatovanie (oddelene ciarkou): ");
                 stringCols = Console.ReadLine(); 
-            } while (stringCols == null);
+            } while (stringCols == null 
+                 || stringCols
+                    .Replace(" ", "")
+                    .Split(",")
+                    .Any(a => a.Split("-").Length == 1) 
+                 || stringCols
+                    .Replace(" ", "")
+                    .Split(",")
+                    .Any(a => a.Split("-")[1].ToUpper() != "N" && a.Split("-")[1].ToUpper() != "E")
+            );
             stringCols = stringCols.Replace(" ", "").ToUpper();
+            var stringColsArr = stringCols.Split(",");
             
-            return stringCols.Split(",");
+            var result = stringColsArr.Select(a => a.Split("-")).ToArray();
+            return result;
         }
 
         private int SelectStartNumber()

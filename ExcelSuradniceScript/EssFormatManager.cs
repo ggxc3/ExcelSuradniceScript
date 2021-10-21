@@ -17,22 +17,22 @@ namespace ExcelSuradniceScript
             _end = end;
         }
 
-        public void FormatColumns(string[] columns)
+        public void FormatColumns(string[][] columns)
         {
             foreach (var col in columns)
             {
-                FormatColumn(col);
+                FormatColumn(col[0], col[1]);
             }
         }
         
-        private void FormatColumn(string column)
+        private void FormatColumn(string column, string coorType)
         {
             var deleteRows = new List<int[]>();
             bool falsing = false;
             for (int i = _start; i <= _end; i++)
             {
                 Console.WriteLine($"Riadok: {i}");
-                if (!FormatCell(column, i))
+                if (!FormatCell(column, i, coorType))
                 {
                     if (!falsing)
                     {
@@ -63,7 +63,7 @@ namespace ExcelSuradniceScript
             }
         }
 
-        private bool FormatCell(string col, int row)
+        private bool FormatCell(string col, int row, string coorType)
         {
             var c = _sheet.Cells[col + row];
             if (c == null || c.Value == null || c.Value.ToString() == "" || c.Text.Length < 5 || c.Text[1] == '.' || c.Text[1] == ',')
@@ -77,11 +77,14 @@ namespace ExcelSuradniceScript
             {
                 text = text.Substring(1);
             }
-
-            int firstTwo;
-            if (int.TryParse(text[0].ToString() + text[1], out firstTwo))
+            
+            if (int.TryParse(text[0].ToString() + text[1], out _) 
+                || (text[0].ToString() == "E" 
+                    || text[0].ToString() == "N") 
+                    && int.TryParse(text[1].ToString(), out _)
+                )
             {
-                if (firstTwo < 30)
+                if (coorType == "E")
                 {
                     if (text.Contains("N"))
                     {
@@ -92,8 +95,7 @@ namespace ExcelSuradniceScript
                     {
                         text = text.Substring(0, 2) + "E" + text.Substring(2);
                     }
-                }
-                else
+                } else if (coorType == "N")
                 {
                     if (text.Contains("E"))
                     {
