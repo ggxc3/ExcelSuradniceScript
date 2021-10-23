@@ -9,6 +9,7 @@ namespace ExcelSuradniceScript
     {
         private ExcelPackage _excelPackage;
         private ExcelWorksheet _mainSheet;
+        private bool _fileLoaded = false;
 
         public EssCore()
         {
@@ -25,6 +26,7 @@ namespace ExcelSuradniceScript
             Console.WriteLine("Načítavám súbor.");
             _excelPackage = new ExcelPackage(file);
             Console.WriteLine("Súbor úspešne načítaný.");
+            _fileLoaded = true;
             Console.WriteLine("Počkaj na ďalší pokyn.");
             _mainSheet = _excelPackage.Workbook.Worksheets[SelectSheet() - 1];
         }
@@ -123,6 +125,10 @@ namespace ExcelSuradniceScript
 
         public void Start()
         {
+            if (!_fileLoaded)
+            {
+                return;
+            }
             var cols = SelectCols();
             var start = SelectStartNumber();
             var end = SelectEndNumber();
