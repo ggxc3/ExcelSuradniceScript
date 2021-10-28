@@ -75,7 +75,9 @@ namespace ExcelSuradniceScript
                  || stringCols
                     .Replace(" ", "")
                     .Split(",")
-                    .Any(a => a.Split("-")[1].ToUpper() != "N" && a.Split("-")[1].ToUpper() != "E")
+                    .Any(a => a.Split("-")[1].ToUpper() != "N" 
+                              && a.Split("-")[1].ToUpper() != "E" 
+                              && a.Split("-")[1].ToUpper() != "V")
             );
             stringCols = stringCols.Replace(" ", "").ToUpper();
             var stringColsArr = stringCols.Split(",");

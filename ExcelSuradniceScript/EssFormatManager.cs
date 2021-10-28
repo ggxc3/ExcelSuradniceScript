@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using OfficeOpenXml;
 
 namespace ExcelSuradniceScript
@@ -31,24 +32,31 @@ namespace ExcelSuradniceScript
             bool falsing = false;
             for (int i = _start; i <= _end; i++)
             {
-                Console.WriteLine($"Riadok: {i}");
-                if (!FormatCell(column, i, coorType))
+                Console.WriteLine($"{column}-{coorType}: Riadok: {i}");
+                if (coorType == "V")
                 {
-                    if (!falsing)
-                    {
-                        deleteRows.Add(new []{i, 1});
-                        falsing = true;
-                    }
-                    else
-                    {
-                        deleteRows[deleteRows.Count - 1][1]++;
-                    }
+                    FormatHeightCell(column, i);
                 }
                 else
                 {
-                    if (falsing)
+                    if (!FormatCell(column, i, coorType))
                     {
-                        falsing = false;
+                        if (!falsing)
+                        {
+                            deleteRows.Add(new []{i, 1});
+                            falsing = true;
+                        }
+                        else
+                        {
+                            deleteRows[deleteRows.Count - 1][1]++;
+                        }
+                    }
+                    else
+                    {
+                        if (falsing)
+                        {
+                            falsing = false;
+                        }
                     }
                 }
             }
@@ -116,6 +124,40 @@ namespace ExcelSuradniceScript
 
             c.Value = text;
             return true;
+        }
+
+        private void FormatHeightCell(string col, int row)
+        {
+            var c = _sheet.Cells[col + row];
+            if (c == null || c.Value == null || c.Value.ToString() == "")
+            {
+                return;
+            }
+            
+            var text = c.Text.Replace(" ", "");
+            text = text.Replace(".", ",");
+
+            if (!double.TryParse(text, out _))
+            {
+                var arr = text.ToCharArray().Select(a => a.ToString()).ToArray();
+                string result = "";
+                foreach (var item in arr)
+                {
+                    if (int.TryParse(item, out _))
+                    {
+                        result += item;
+                    }
+                    else
+                    {
+                        c.Value = result;
+                        return;
+                    }
+                }
+            }
+            
+            text = text.Replace(",", ".");
+
+            c.Value = text;
         }
     }
 }
