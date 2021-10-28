@@ -72,6 +72,7 @@ namespace ExcelSuradniceScript
             }
 
             var text = c.Text.Replace(" ", "");
+            text = text.Replace(",", ".");
             
             if (text[0] == '0')
             {
