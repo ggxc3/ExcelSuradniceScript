@@ -154,6 +154,10 @@ namespace ExcelSuradniceScript
                     }
                 }
             }
+            else
+            {
+                text = Math.Round(double.Parse(text)).ToString();
+            }
             
             text = text.Replace(",", ".");
 
