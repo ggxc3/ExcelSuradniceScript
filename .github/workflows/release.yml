@@ -48,7 +48,7 @@ jobs:
           GOARCH: amd64
         run: |
           New-Item -ItemType Directory -Path dist -Force | Out-Null
-          go build -trimpath -ldflags "-s -w -X main.version=$env:TAG" -o "dist/$env:ASSET_NAME" .
+          go build -trimpath -ldflags "-s -w -H=windowsgui -X main.version=$env:TAG" -o "dist/$env:ASSET_NAME" .
 
       - name: Create GitHub release
         shell: pwsh
