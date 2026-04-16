@@ -10,7 +10,7 @@ func LoadFile() (string, bool, error) {
 		Filter("Excel Files", "xls", "xlsx", "xlsm").
 		Load()
 	if err != nil {
-		if err == dialog.Cancelled {
+		if err == dialog.ErrCancelled {
 			return "", false, nil
 		}
 		return "", false, err
@@ -19,14 +19,17 @@ func LoadFile() (string, bool, error) {
 	return path, true, nil
 }
 
-func SaveFile() (string, bool, error) {
-	path, err := dialog.File().
+func SaveFile(defaultName string) (string, bool, error) {
+	dlg := dialog.File().
 		Title("Uložiť ako").
-		Filter("Excel Files", "xls", "xlsx", "xlsm").
-		SetStartFile("output.xlsx").
-		Save()
+		Filter("Excel Files", "xlsx")
+	if defaultName != "" {
+		dlg = dlg.SetStartFile(defaultName)
+	}
+
+	path, err := dlg.Save()
 	if err != nil {
-		if err == dialog.Cancelled {
+		if err == dialog.ErrCancelled {
 			return "", false, nil
 		}
 		return "", false, err
