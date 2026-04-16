@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"syscall"
 )
 
 type WindowConfig struct {
@@ -110,8 +111,12 @@ $btnInput.Add_Click({
   $dlg.Filter = 'Excel files (*.xlsx;*.xlsm;*.xls)|*.xlsx;*.xlsm;*.xls'
   if ($dlg.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
     $input.Text = $dlg.FileName
+    $input.SelectionStart = 0
+    $input.SelectionLength = 0
     if ([string]::IsNullOrWhiteSpace($output.Text) -or $output.Text.ToLower().EndsWith('_formatted.xlsx')) {
       $output.Text = DefaultOut $dlg.FileName
+      $output.SelectionStart = 0
+      $output.SelectionLength = 0
     }
   }
 })
@@ -122,6 +127,8 @@ $btnOutput.Add_Click({
   $dlg.FileName = $output.Text
   if ($dlg.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
     $output.Text = $dlg.FileName
+    $output.SelectionStart = 0
+    $output.SelectionLength = 0
   }
 })
 
@@ -140,7 +147,9 @@ $btnProcess.Add_Click({
 [void]$form.ShowDialog()
 `, appVersion)
 
-	out, err := exec.Command("powershell", "-NoProfile", "-Command", script).Output()
+	cmd := exec.Command("powershell", "-NoProfile", "-Command", script)
+	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	out, err := cmd.Output()
 	if err != nil {
 		return nil, false, err
 	}
