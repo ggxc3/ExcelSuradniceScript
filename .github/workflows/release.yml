@@ -1,0 +1,68 @@
+name: Release Windows EXE
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: SemVer release version without the v prefix
+        required: true
+        default: "0.0.1"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Validate version and prepare names
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          if ($version -notmatch "^\d+\.\d+\.\d+$") {
+            throw "Version must match SemVer core format, for example 0.0.1"
+          }
+
+          $tag = "v$version"
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "ASSET_NAME=ExcelSuradniceScript-$tag-windows-amd64.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Ensure release does not already exist
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view $env:TAG *> $null
+          if ($LASTEXITCODE -eq 0) {
+            throw "Release $env:TAG already exists."
+          }
+
+      - name: Run tests
+        shell: pwsh
+        run: go test ./...
+
+      - name: Build Windows executable
+        shell: pwsh
+        env:
+          GOOS: windows
+          GOARCH: amd64
+        run: |
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          go build -trimpath -ldflags "-s -w -X main.version=$env:TAG" -o "dist/$env:ASSET_NAME" .
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create $env:TAG "dist/$env:ASSET_NAME" --title $env:TAG --target $env:GITHUB_SHA --notes "Windows EXE release $env:TAG"
