@@ -147,8 +147,10 @@ $btnProcess.Add_Click({
 [void]$form.ShowDialog()
 `, appVersion)
 
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", script)
-	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	cmd := exec.Command("powershell", "-NoProfile", "-STA", "-Command", script)
+	// CREATE_NO_WINDOW hides only the PowerShell console host while still allowing
+	// WinForms to create and show its own application window.
+	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: 0x08000000}
 	out, err := cmd.Output()
 	if err != nil {
 		return nil, false, err
