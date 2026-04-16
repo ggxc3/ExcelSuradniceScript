@@ -37,23 +37,6 @@ jobs:
           "TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Append
           "ASSET_NAME=ExcelSuradniceScript-$tag-windows-amd64.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Ensure release does not already exist
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          $PSNativeCommandUseErrorActionPreference = $false
-          gh release view $env:TAG *> $null
-          $exitCode = $LASTEXITCODE
-
-          if ($exitCode -eq 0) {
-            throw "Release $env:TAG already exists."
-          }
-
-          if ($exitCode -ne 1) {
-            throw "Failed to check release existence for $env:TAG. gh exited with code $exitCode."
-          }
-
       - name: Run tests
         shell: pwsh
         run: go test ./...
