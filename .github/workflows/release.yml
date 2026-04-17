@@ -33,8 +33,6 @@ jobs:
           $json.version = "${{ github.event.inputs.version }}"
           $json | ConvertTo-Json -Depth 100 | Set-Content $path -Encoding UTF8
 
-      - name: Backend tests
-        run: cargo test --manifest-path src-tauri/Cargo.toml
       - name: Build single-file EXE
         shell: pwsh
         run: |

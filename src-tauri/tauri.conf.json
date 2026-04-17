@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.excelsuradnice.script",
   "build": {
-    "frontendDist": "../dist"
+    "frontendDist": "./frontend"
   },
   "app": {
     "windows": [
