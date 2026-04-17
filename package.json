@@ -10,7 +10,7 @@
     "build:ts": "tsc -p tsconfig.json && node scripts/copy-static.mjs",
     "build": "npm run build:ts",
     "test": "vitest run",
-    "dist:win": "npm run build && electron-builder --win portable"
+    "dist:win": "npm run build && electron-builder --win portable zip"
   },
   "dependencies": {
     "xlsx": "^0.18.5"
@@ -35,9 +35,16 @@
       "package.json"
     ],
     "win": {
+      "requestedExecutionLevel": "asInvoker",
       "target": [
         {
           "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
           "arch": [
             "x64"
           ]

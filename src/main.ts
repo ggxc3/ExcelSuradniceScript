@@ -9,7 +9,10 @@ function createWindow(): void {
     height: 560,
     backgroundColor: "#f5f8fc",
     webPreferences: {
-      preload: path.join(__dirname, "preload.js")
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: false
     }
   });
 

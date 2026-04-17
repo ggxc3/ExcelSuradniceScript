@@ -37,3 +37,7 @@ npm run build
 ```bash
 npm run dist:win
 ```
+
+Príkaz vygeneruje:
+- **portable EXE** (`...portable.exe`) pre rýchle spustenie bez inštalácie,
+- **ZIP balík** (`...win.zip`) s klasickým `win-unpacked/*.exe`, ktorý je vhodný pre firemné prostredia bez admin práv, kde môže byť spúšťanie z dočasného priečinka blokované.

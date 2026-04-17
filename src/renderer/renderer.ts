@@ -27,6 +27,18 @@ const columnsEl = document.querySelector<HTMLInputElement>("#columns")!;
 const startEl = document.querySelector<HTMLInputElement>("#startRow")!;
 const endEl = document.querySelector<HTMLInputElement>("#endRow")!;
 const statusEl = document.querySelector<HTMLParagraphElement>("#status")!;
+const inputButton = document.querySelector<HTMLButtonElement>("#btnInput");
+const outputButton = document.querySelector<HTMLButtonElement>("#btnOutput");
+const processButton = document.querySelector<HTMLButtonElement>("#btnProcess");
+const cancelButton = document.querySelector<HTMLButtonElement>("#btnCancel");
+
+if (!window.api) {
+  statusEl.textContent =
+    "Interná chyba: nepodarilo sa inicializovať prepojenie medzi aplikáciou a UI (preload).";
+  inputButton?.setAttribute("disabled", "true");
+  outputButton?.setAttribute("disabled", "true");
+  processButton?.setAttribute("disabled", "true");
+}
 
 function defaultOutputPath(sourcePath: string): string {
   if (sourcePath.toLowerCase().endsWith(".xlsx")) {
@@ -51,7 +63,7 @@ async function refreshSheets(inputPath: string): Promise<void> {
   }
 }
 
-document.querySelector("#btnInput")?.addEventListener("click", async () => {
+inputButton?.addEventListener("click", async () => {
   const selected = await window.api.openInput();
   if (!selected) return;
 
@@ -62,12 +74,12 @@ document.querySelector("#btnInput")?.addEventListener("click", async () => {
   await refreshSheets(selected);
 });
 
-document.querySelector("#btnOutput")?.addEventListener("click", async () => {
+outputButton?.addEventListener("click", async () => {
   const selected = await window.api.saveOutput(outputEl.value);
   if (selected) outputEl.value = selected;
 });
 
-document.querySelector("#btnProcess")?.addEventListener("click", async () => {
+processButton?.addEventListener("click", async () => {
   const request: ProcessRequest = {
     inputPath: inputEl.value,
     outputPath: outputEl.value,
@@ -86,7 +98,7 @@ document.querySelector("#btnProcess")?.addEventListener("click", async () => {
   }
 });
 
-document.querySelector("#btnCancel")?.addEventListener("click", () => window.close());
+cancelButton?.addEventListener("click", () => window.close());
 
 
 export {};
