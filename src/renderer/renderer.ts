@@ -87,3 +87,6 @@ document.querySelector("#btnProcess")?.addEventListener("click", async () => {
 });
 
 document.querySelector("#btnCancel")?.addEventListener("click", () => window.close());
+
+
+export {};
