@@ -1,29 +1,39 @@
-# Excel Súradnice Script (Tauri)
+# Excel Súradnice Script (Electron + TypeScript)
 
-Projekt bol kompletne migrovaný z Go/WinForms na **Tauri**.
+Desktop aplikácia pre spracovanie Excel súradníc bola kompletne prerobená na **Electron** s **TypeScript** backendom aj UI.
 
-## Spustenie
+## Funkcionalita
+
+Aplikácia zachováva pôvodné správanie:
+- výber vstupného a výstupného Excel súboru,
+- výber hárku,
+- definícia stĺpcov vo formáte `A-N,B-E,C-V`,
+- spracovanie rozsahu riadkov,
+- formátovanie súradníc `N/E`,
+- formátovanie výšky `V`,
+- odstraňovanie riadkov s neplatnými súradnicami.
+
+## Spustenie lokálne
 
 ```bash
-cargo tauri dev
+npm install
+npm run dev
 ```
 
 ## Testy
 
 ```bash
-cargo test --manifest-path src-tauri/Cargo.toml
+npm test
 ```
 
-## Windows chyba „Systém Windows nemôže získať prístup…“
+## Build
 
-Táto chyba sa typicky objaví pri **priamej exekúcii stiahnutého nesignovaného EXE** (SmartScreen / antivirus / práva v priečinku).
+```bash
+npm run build
+```
 
-Release teraz publikuje späť **single-file EXE**:
-- `ExcelSuradniceScript-vX.Y.Z-windows-amd64.exe`
+## Windows release (portable EXE)
 
-Ak sa chyba objaví znova, potrebujeme od používateľa tieto info:
-1. presnú cestu, z ktorej sa EXE spúšťa (Downloads/OneDrive/sieťový disk),
-2. či EXE po stiahnutí vidno v Properties tlačidlo **Unblock**,
-3. názov antivírusu a či nepresunul EXE do karantény,
-4. či spustenie z lokálnej cesty `C:\\Tools\\...` funguje,
-5. screenshot celej chyby + timestamp.
+```bash
+npm run dist:win
+```
