@@ -36,23 +36,47 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build portable EXE
+      - name: Build one-file EXE and portable ZIP
         shell: pwsh
         run: |
           npm run dist:win
           $version = "${{ github.event.inputs.version }}"
-          $asset = "ExcelSuradniceScript-v$version-windows-amd64.exe"
-          Copy-Item "release/ExcelSuradniceScript $version.exe" $asset
-          "ASSET_NAME=$asset" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Create GitHub release with EXE
+          $portableExe = Get-ChildItem "release" -File -Filter "*.exe" |
+            Where-Object { $_.Name -match "^ExcelSuradniceScript .*\.exe$" } |
+            Select-Object -First 1
+
+          if (-not $portableExe) {
+            throw "Portable EXE was not found in the release directory."
+          }
+
+          $onefileAsset = "ExcelSuradniceScript-v$version-windows-amd64-onefile.exe"
+          Copy-Item $portableExe.FullName $onefileAsset
+
+          $portableZipAsset = "ExcelSuradniceScript-v$version-windows-amd64-portable.zip"
+          $builderZip = Get-ChildItem "release" -File -Filter "*.zip" | Select-Object -First 1
+
+          if ($builderZip) {
+            Copy-Item $builderZip.FullName $portableZipAsset
+          }
+          else {
+            $stagingDir = Join-Path $env:RUNNER_TEMP "portable"
+            New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null
+            Copy-Item $portableExe.FullName (Join-Path $stagingDir $portableExe.Name)
+            Compress-Archive -Path (Join-Path $stagingDir "*") -DestinationPath $portableZipAsset -Force
+          }
+
+          "ONEFILE_ASSET_NAME=$onefileAsset" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "PORTABLE_ASSET_NAME=$portableZipAsset" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Create GitHub release with one-file EXE and portable ZIP
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $version = "${{ github.event.inputs.version }}"
           $tag = "v$version"
-          gh release create $tag $env:ASSET_NAME `
+          gh release create $tag $env:ONEFILE_ASSET_NAME $env:PORTABLE_ASSET_NAME `
             --title "Excel Suradnice Script $tag" `
             --target $env:GITHUB_SHA `
-            --notes "Portable Electron EXE release for Windows: $env:ASSET_NAME"
+            --notes "Windows release assets:`n- One-file EXE: $env:ONEFILE_ASSET_NAME`n- Portable ZIP: $env:PORTABLE_ASSET_NAME"
