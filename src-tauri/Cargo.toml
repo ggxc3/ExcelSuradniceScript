@@ -5,6 +5,12 @@ description = "Excel coordinate formatter"
 authors = ["ExcelSuradniceScript"]
 edition = "2021"
 
+[[bin]]
+name = "excel-suradnice-script"
+path = "src/main.rs"
+test = false
+bench = false
+
 [build-dependencies]
 tauri-build = { version = "2.5.1", features = [] }
 
