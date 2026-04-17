@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel Súradnice Script</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Excel Súradnice Script</h1>
+      <p class="subtitle">Všetko nastavíš v jednom okne. Potom klikni na Spracovať.</p>
+
+      <div class="row">
+        <label for="inputPath">Vstupný Excel:</label>
+        <input id="inputPath" type="text" />
+        <button id="btnInput" type="button">Prehľadávať...</button>
+      </div>
+
+      <div class="row">
+        <label for="outputPath">Výstupný Excel:</label>
+        <input id="outputPath" type="text" />
+        <button id="btnOutput" type="button">Uložiť ako...</button>
+      </div>
+
+      <div class="row">
+        <label for="sheet">Hárok:</label>
+        <select id="sheet"></select>
+      </div>
+
+      <div class="row">
+        <label for="columns">Stĺpce (A-N,B-E,C-V):</label>
+        <input id="columns" type="text" value="A-N" />
+      </div>
+
+      <div class="row compact">
+        <label for="startRow">Od riadku:</label>
+        <input id="startRow" type="number" value="1" min="1" />
+      </div>
+
+      <div class="row compact">
+        <label for="endRow">Do riadku:</label>
+        <input id="endRow" type="number" value="1" min="1" />
+      </div>
+
+      <p id="status" class="status">Tip: pri výbere vstupu sa výstup nastaví automaticky.</p>
+
+      <div class="actions">
+        <button id="btnCancel" type="button">Zavrieť</button>
+        <button id="btnProcess" type="button" class="primary">Spracovať</button>
+      </div>
+    </main>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

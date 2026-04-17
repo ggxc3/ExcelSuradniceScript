@@ -1,4 +1,4 @@
-name: Release Windows (Tauri)
+name: Release Windows (Electron)
 
 on:
   workflow_dispatch:
@@ -16,7 +16,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Validate version input
         shell: pwsh
         run: |
@@ -25,21 +28,21 @@ jobs:
             throw "Version must match SemVer core format, for example 0.1.0"
           }
 
-      - name: Update Tauri app version
+      - name: Update package version
         shell: pwsh
         run: |
-          $path = "src-tauri/tauri.conf.json"
-          $json = Get-Content $path -Raw | ConvertFrom-Json
-          $json.version = "${{ github.event.inputs.version }}"
-          $json | ConvertTo-Json -Depth 100 | Set-Content $path -Encoding UTF8
+          npm version "${{ github.event.inputs.version }}" --no-git-tag-version
 
-      - name: Build single-file EXE
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build portable EXE
         shell: pwsh
         run: |
-          cargo build --release --manifest-path src-tauri/Cargo.toml
+          npm run dist:win
           $version = "${{ github.event.inputs.version }}"
           $asset = "ExcelSuradniceScript-v$version-windows-amd64.exe"
-          Copy-Item "src-tauri/target/release/excel-suradnice-script.exe" $asset
+          Copy-Item "release/ExcelSuradniceScript $version.exe" $asset
           "ASSET_NAME=$asset" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Create GitHub release with EXE
@@ -52,4 +55,4 @@ jobs:
           gh release create $tag $env:ASSET_NAME `
             --title "Excel Suradnice Script $tag" `
             --target $env:GITHUB_SHA `
-            --notes "Single-file EXE release for Windows: $env:ASSET_NAME"
+            --notes "Portable Electron EXE release for Windows: $env:ASSET_NAME"
