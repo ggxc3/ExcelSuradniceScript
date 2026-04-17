@@ -49,7 +49,13 @@ function Add-Text($x, $y, $w = 420, $text = '') {
   $tb = New-Object System.Windows.Forms.TextBox
   $tb.Location = New-Object System.Drawing.Point($x, $y)
   $tb.Size = New-Object System.Drawing.Size($w, 28)
+  $tb.AutoSize = $false
+  $tb.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
+  $tb.Font = New-Object System.Drawing.Font('Segoe UI', 10)
+  $tb.TextAlign = [System.Windows.Forms.HorizontalAlignment]::Left
   $tb.Text = $text
+  $tb.SelectionStart = 0
+  $tb.SelectionLength = 0
   $panel.Controls.Add($tb)
   return $tb
 }
