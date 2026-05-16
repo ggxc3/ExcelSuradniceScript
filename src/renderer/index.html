@@ -7,48 +7,80 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="container">
-      <h1>Excel Súradnice Script</h1>
-      <p class="subtitle">Všetko nastavíš v jednom okne. Potom klikni na Spracovať.</p>
+    <main class="shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Excel formatter</p>
+          <h1>Excel Súradnice Script</h1>
+        </div>
+        <p class="subtitle">Formátovanie N/E súradníc a výšok bez konzoly.</p>
+      </header>
 
-      <div class="row">
-        <label for="inputPath">Vstupný Excel:</label>
-        <input id="inputPath" type="text" />
-        <button id="btnInput" type="button">Prehľadávať...</button>
-      </div>
+      <form id="processForm" class="workspace">
+        <section class="panel file-panel" aria-label="Súbory">
+          <div class="section-heading">
+            <span class="step">1</span>
+            <div>
+              <h2>Súbory</h2>
+              <p>Vyber vstupný zošit a miesto uloženia výsledku.</p>
+            </div>
+          </div>
 
-      <div class="row">
-        <label for="outputPath">Výstupný Excel:</label>
-        <input id="outputPath" type="text" />
-        <button id="btnOutput" type="button">Uložiť ako...</button>
-      </div>
+          <label class="field field-with-action" for="inputPath">
+            <span>Vstupný Excel</span>
+            <input id="inputPath" type="text" placeholder="Vyber .xlsx, .xlsm alebo .xls súbor" spellcheck="false" />
+            <button id="btnInput" type="button">Prehľadávať</button>
+          </label>
 
-      <div class="row">
-        <label for="sheet">Hárok:</label>
-        <select id="sheet"></select>
-      </div>
+          <label class="field field-with-action" for="outputPath">
+            <span>Výstupný Excel</span>
+            <input id="outputPath" type="text" placeholder="Cesta sa predvyplní po výbere vstupu" spellcheck="false" />
+            <button id="btnOutput" type="button">Uložiť ako</button>
+          </label>
+        </section>
 
-      <div class="row">
-        <label for="columns">Stĺpce (A-N,B-E,C-V):</label>
-        <input id="columns" type="text" value="A-N" />
-      </div>
+        <section class="panel settings-panel" aria-label="Nastavenia spracovania">
+          <div class="section-heading">
+            <span class="step">2</span>
+            <div>
+              <h2>Nastavenie</h2>
+              <p>Typ stĺpca určuje, či sa bunka formátuje ako sever, východ alebo výška.</p>
+            </div>
+          </div>
 
-      <div class="row compact">
-        <label for="startRow">Od riadku:</label>
-        <input id="startRow" type="number" value="1" min="1" />
-      </div>
+          <div class="settings-grid">
+            <label class="field" for="sheet">
+              <span>Hárok <small id="sheetMeta"></small></span>
+              <select id="sheet"></select>
+            </label>
 
-      <div class="row compact">
-        <label for="endRow">Do riadku:</label>
-        <input id="endRow" type="number" value="1" min="1" />
-      </div>
+            <label class="field" for="columns">
+              <span>Stĺpce</span>
+              <input id="columns" type="text" value="A-N" spellcheck="false" />
+            </label>
 
-      <p id="status" class="status">Tip: pri výbere vstupu sa výstup nastaví automaticky.</p>
+            <label class="field" for="startRow">
+              <span>Od riadku</span>
+              <input id="startRow" type="number" value="1" min="1" step="1" />
+            </label>
 
-      <div class="actions">
-        <button id="btnCancel" type="button">Zavrieť</button>
-        <button id="btnProcess" type="button" class="primary">Spracovať</button>
-      </div>
+            <label class="field" for="endRow">
+              <span>Do riadku</span>
+              <input id="endRow" type="number" value="1" min="1" step="1" />
+            </label>
+          </div>
+        </section>
+
+        <section id="statusPanel" class="status-panel" data-tone="idle" aria-live="polite">
+          <span class="status-dot"></span>
+          <p id="status">Tip: pri výbere vstupu sa výstup nastaví automaticky.</p>
+        </section>
+
+        <div class="actions">
+          <button id="btnCancel" type="button" class="secondary">Zavrieť</button>
+          <button id="btnProcess" type="submit" class="primary">Spracovať</button>
+        </div>
+      </form>
     </main>
 
     <script src="renderer.js"></script>

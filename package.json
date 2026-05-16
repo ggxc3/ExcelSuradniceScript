@@ -9,18 +9,14 @@
     "dev": "npm run build:ts && electron .",
     "build:ts": "tsc -p tsconfig.json && node scripts/copy-static.mjs",
     "build": "npm run build:ts",
-    "test": "vitest run",
-    "dist:win": "npm run build && electron-builder --win portable zip"
-  },
-  "dependencies": {
-    "xlsx": "^0.18.5"
+    "test": "npm run build:ts && node --test build/**/*.test.js",
+    "dist:win": "npm run build && electron-builder --win portable zip --x64"
   },
   "devDependencies": {
     "@types/node": "^22.15.17",
     "electron": "^35.2.0",
     "electron-builder": "^24.13.3",
-    "typescript": "^5.8.3",
-    "vitest": "^3.1.2"
+    "typescript": "^5.8.3"
   },
   "build": {
     "appId": "com.ggxc3.excelsuradnicescript",
@@ -51,5 +47,8 @@
         }
       ]
     }
+  },
+  "dependencies": {
+    "@e965/xlsx": "^0.20.3"
   }
 }

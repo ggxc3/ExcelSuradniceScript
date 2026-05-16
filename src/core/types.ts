@@ -6,3 +6,8 @@ export interface ProcessRequest {
   startRow: number;
   endRow: number;
 }
+
+export interface SheetInfo {
+  name: string;
+  rowCount: number;
+}

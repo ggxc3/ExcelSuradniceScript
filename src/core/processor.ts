@@ -1,5 +1,5 @@
-import * as XLSX from "xlsx";
-import { ProcessRequest } from "./types";
+import * as XLSX from "@e965/xlsx";
+import { ProcessRequest, SheetInfo } from "./types";
 
 export type ColumnSpec = [column: string, coordinateType: "N" | "E" | "V"];
 
@@ -13,6 +13,9 @@ export function parseColumnsSpec(spec: string): ColumnSpec[] {
     const split = part.split("-");
     if (split.length !== 2 || !split[0] || !split[1]) {
       throw new Error(`Neplatný formát stĺpcov: ${part}`);
+    }
+    if (!/^[A-Z]+$/.test(split[0])) {
+      throw new Error(`Neplatný stĺpec ${split[0]} v ${part}`);
     }
     if (split[1] !== "N" && split[1] !== "E" && split[1] !== "V") {
       throw new Error(`Neplatný typ ${split[1]} v ${part} (povolené: N, E, V)`);
@@ -97,6 +100,24 @@ export function columnToIndex(column: string): number {
     .reduce((acc, char) => acc * 26 + (char.charCodeAt(0) - 64), 0);
 }
 
+export function getWorkbookSheetInfo(inputPath: string): SheetInfo[] {
+  if (!inputPath.trim()) throw new Error("Vyber vstupný Excel súbor");
+
+  const workbook = XLSX.readFile(inputPath, { bookSheets: false, cellDates: false });
+  return workbook.SheetNames.map((name) => {
+    const rows = XLSX.utils.sheet_to_json<string[]>(workbook.Sheets[name], {
+      header: 1,
+      raw: false,
+      defval: ""
+    });
+
+    return {
+      name,
+      rowCount: rows.length
+    };
+  });
+}
+
 export function processRows(rows: string[][], columns: ColumnSpec[], startRow: number, endRow: number): string[][] {
   let effectiveEnd = Math.min(endRow, rows.length);
 
@@ -135,7 +156,12 @@ export function processWorkbook(request: ProcessRequest): string {
   if (!request.inputPath.trim()) throw new Error("Vyber vstupný Excel súbor");
   if (!request.outputPath.trim()) throw new Error("Zvoľ cieľový súbor pre uloženie");
   if (!request.sheet.trim()) throw new Error("Vyber hárok");
-  if (request.startRow <= 0 || request.endRow <= 0) {
+  if (
+    !Number.isSafeInteger(request.startRow) ||
+    !Number.isSafeInteger(request.endRow) ||
+    request.startRow <= 0 ||
+    request.endRow <= 0
+  ) {
     throw new Error("Riadky musia byť kladné celé čísla");
   }
   if (request.startRow > request.endRow) {
@@ -143,7 +169,7 @@ export function processWorkbook(request: ProcessRequest): string {
   }
 
   const columns = parseColumnsSpec(request.columns);
-  const workbook = XLSX.readFile(request.inputPath, { cellDates: false });
+  const workbook = XLSX.readFile(request.inputPath, { bookVBA: true, cellDates: false });
   const sheet = workbook.Sheets[request.sheet];
   if (!sheet) {
     throw new Error(`Hárok ${request.sheet} sa v súbore nenašiel`);
@@ -156,11 +182,9 @@ export function processWorkbook(request: ProcessRequest): string {
   });
 
   const processedRows = processRows(rows, columns, request.startRow, request.endRow);
-  const outputSheet = XLSX.utils.aoa_to_sheet(processedRows);
+  workbook.Sheets[request.sheet] = XLSX.utils.aoa_to_sheet(processedRows);
 
-  const outputWb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(outputWb, outputSheet, request.sheet);
-  XLSX.writeFile(outputWb, request.outputPath);
+  XLSX.writeFile(workbook, request.outputPath);
 
   return `Hotovo. Súbor bol úspešne uložený: ${request.outputPath}`;
 }
